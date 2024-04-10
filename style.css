@@ -23,8 +23,9 @@ canvas{
     align-items: center;
 }
 #win{
+    transform: scale(0);
     position: absolute;
-    display: none;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -34,13 +35,16 @@ canvas{
     background: #e5e5e5;
     border: 5px #515050 solid;
     border-radius: 10px;
+    transition: .7s;
 }
 #win h1{
     font-size: 40px;
+    cursor: default;
 }
 #win p{
     font-size: 25px;
     font-weight: 600;
+    cursor: default;
 }
 #win button{
     font-size: 15px;

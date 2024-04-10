@@ -43,19 +43,28 @@ class Ball {
 
 let gameOver = false
 let ball
+let bounces = 0
+
+const randomYSpeed = () => {
+    let speed = Math.floor(Math.random() * 4) + 1
+    let signal = Math.floor(Math.random() * 2)
+
+    if(signal === 0) signal = -1
+    return speed * signal
+}
 
 const newBall = (player) => {
-    let vX, vY, pX
+    let vX, pX
     if(player === 'p1'){
-        vX = 10
+        vX = 5
         pX = 460
     }
     else if(player === 'p2'){
-        vX = -10
+        vX = -5
         pX = 430
     }
     else{
-        vX = 10
+        vX = -5
         pX = 460
     }
     ball = new Ball({
@@ -65,7 +74,7 @@ const newBall = (player) => {
         },
         velocity: {
             x: vX,
-            y: -1
+            y: randomYSpeed()
         }
     })
 }
@@ -110,21 +119,48 @@ const background = () => {
 
 }
 
-
 p1.draw()
 p2.draw()
 
 const ballCollidesPlayer = () => {
-    return ((p1.position.x + Player.width == ball.position.x &&
+    return ((p1.position.x + Player.width >= ball.position.x + ball.velocity.x/2&&
         ball.position.y + Ball.size >= p1.position.y &&
         ball.position.y <= p1.position.y + Player.height) ||
-        (p2.position.x == ball.position.x + Ball.size &&
+        (p2.position.x <= ball.position.x + Ball.size + ball.velocity.x/2&&
             ball.position.y + Ball.size >= p2.position.y &&
             ball.position.y <= p2.position.y + Player.height))
 }
 
 const ballCollidesMap = () => {
-    return (ball.position.y - 5 === 0 || ball.position.y + Ball.size + 5 === canvas.height)
+    return (ball.position.y + ball.velocity.y <= 0 || ball.position.y + Ball.size +ball.velocity.y >= canvas.height)
+}
+
+const playerRedirectsBall = () => {
+    if(ball.velocity.y < 8 && ball.velocity.y > -8){
+        if((ball.position.y + Ball.size/2 < p1.position.y + 30 && p1.position.x + Player.width == ball.position.x) && p1.velocity.y < 0){
+            ball.velocity.y += p1.velocity.y/4
+        }
+        else if((ball.position.y + Ball.size/2 < p2.position.y + 30 && p2.position.x == ball.position.x + Ball.size) && p2.velocity.y < 0){
+            ball.velocity.y += p2.velocity.y/4
+        }
+        else if((ball.position.y + Ball.size/2 > p1.position.y + 60 && p1.position.x == ball.position.x + Ball.size) && p1.velocity.y > 0){
+            ball.velocity.y += p1.velocity.y/4
+        }
+        else if((ball.position.y + Ball.size/2 > p2.position.y + 60 && p2.position.x == ball.position.x + Ball.size) && p2.velocity.y > 0){
+            ball.velocity.y += p2.velocity.y/4
+        }
+    }
+}
+
+const ballAcceleration = () => {
+    if(bounces !== 0 && bounces % 2 === 0 && (ball.velocity.x >-12 && ball.velocity.x < 12)){
+        if(ball.velocity.x<0){
+            ball.velocity.x --
+        }
+        else if(ball.velocity.x>0){
+            ball.velocity.x ++
+        }
+    }
 }
 
 const scoreDetection = () => {
@@ -143,14 +179,14 @@ const winDetection = () => {
         if(p1.score > p2.score) document.querySelector('#win p').innerHTML = "Jogador 1 Ganhou!"
         else document.querySelector('#win p').innerHTML = "Jogador 2 Ganhou!"
 
-        document.getElementById('win').style.display = "flex"
+        document.getElementById('win').style.transform = "scale(1)"
         gameOver = true
     }
 }
 
 const animate = () => {
     if(!gameOver) window.requestAnimationFrame(animate)
-    
+
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     background()
     ball.draw()
@@ -158,17 +194,25 @@ const animate = () => {
     p2.draw()
 
     if (ballCollidesPlayer()) {
+        bounces++
         ball.velocity.x *= -1
+        playerRedirectsBall()
+        ballAcceleration()
+        console.log(ball.velocity.x)
     }
+    
+
     if (ballCollidesMap()) {
         ball.velocity.y *= -1
     }
 
     if(scoreDetection() === 'p1'){
+        bounces = 0
         p1.score ++
         newBall('p1')
     }
     else if(scoreDetection() === 'p2'){
+        bounces = 0
         p2.score ++
         newBall('p2')
     }
@@ -186,17 +230,17 @@ const restart = () => {
 
 document.addEventListener('keydown', ({ key }) => {
     if (key === 'w') {
-        p1.velocity.y = -7
+        p1.velocity.y = -8
     }
     else if (key === 's') {
-        p1.velocity.y = 7
+        p1.velocity.y = 8
     }
 
     if (key === 'ArrowUp') {
-        p2.velocity.y = -7
+        p2.velocity.y = -8
     }
     else if (key === 'ArrowDown') {
-        p2.velocity.y = 7
+        p2.velocity.y = 8
     }
 })
 document.addEventListener('keyup', ({ key }) => {
