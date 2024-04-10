@@ -4,28 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pong</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas></canvas>
+    <div id="gameContent">
+        <canvas></canvas>
+        <div id="win">
+            <h1>Parabens!!</h1>
+            <p></p>
+            <button onclick="restart()">Jogar Novamente</button>
+        </div>
+    </div>
 </body>
-<style>
-    *{
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    body{
-        background: #202020;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    canvas{
-        margin-top: 40px;
-        background: black;
-        width: 900px;
-        height: 600px;
-    }
-</style>
 <script src="main.js"></script>
 </html>
