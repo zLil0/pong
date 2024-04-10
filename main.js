@@ -123,10 +123,10 @@ p1.draw()
 p2.draw()
 
 const ballCollidesPlayer = () => {
-    return ((p1.position.x + Player.width >= ball.position.x + ball.velocity.x/2&&
+    return ((p1.position.x + Player.width >= ball.position.x + ball.velocity.x/2 && ball.position.x + ball.velocity.x/2 >= p1.position.x &&
         ball.position.y + Ball.size >= p1.position.y &&
         ball.position.y <= p1.position.y + Player.height) ||
-        (p2.position.x <= ball.position.x + Ball.size + ball.velocity.x/2&&
+        (p2.position.x <= ball.position.x + Ball.size + ball.velocity.x/2&& ball.position.x  + Ball.size + ball.velocity.x/2 <= p2.position.x + Player.width &&
             ball.position.y + Ball.size >= p2.position.y &&
             ball.position.y <= p2.position.y + Player.height))
 }
@@ -165,10 +165,10 @@ const ballAcceleration = () => {
 
 const scoreDetection = () => {
     let player
-    if(ball.position.x + Ball.size <= 0){
+    if(ball.position.x + Ball.size + ball.velocity.x <= 0){
         player = 'p2'
     }
-    else if(ball.position.x >= canvas.width){
+    else if(ball.position.x + ball.velocity.x >= canvas.width){
         player = 'p1'
     }
     return player
@@ -198,7 +198,6 @@ const animate = () => {
         ball.velocity.x *= -1
         playerRedirectsBall()
         ballAcceleration()
-        console.log(ball.velocity.x)
     }
     
 
